@@ -7001,6 +7001,18 @@ SYSCALL_DEFINE0(sched_yield)
 	return 0;
 }
 
+/**
+ * sched_other_rr_setquantum - set the time slice for other_rr scheduler
+ * @quantum: length of time slice
+ */
+SYSCALL_DEFINE1(sched_other_rr_setquantum, unsigned int, quantum)
+{
+	other_rr_time_slice = quantum;
+	printk("other_rr_time_slice changed\n");
+	return 0;
+}
+
+
 static inline int should_resched(void)
 {
 	return need_resched() && !(preempt_count() & PREEMPT_ACTIVE);
