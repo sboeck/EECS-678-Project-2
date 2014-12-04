@@ -31,15 +31,80 @@ static void update_curr_other_rr(struct rq *rq)
  */
 static void enqueue_task_other_rr(struct rq *rq, struct task_struct *p, int wakeup, bool b)
 {
-	// not yet implemented
+	// not yet implemented  NOT DONE
+	/*
+	struct cfs_rq *cfs_rq;
+	struct sched_entity *se = &p->se;
+	int flags = 0;
+
+	if (wakeup)
+		flags |= ENQUEUE_WAKEUP;
+	if (p->state == TASK_WAKING)
+		flags |= ENQUEUE_MIGRATE;
+
+	for_each_sched_entity(se) {
+		if (se->on_rq)
+			break;
+		cfs_rq = cfs_rq_of(se);
+		enqueue_entity(cfs_rq, se, flags);
+		flags = ENQUEUE_WAKEUP;
+	}
+
+	hrtick_update(rq);*/
 }
+
+//#define for_each_sched_entity(se) \
+		for (; se; se = NULL)
 
 static void dequeue_task_other_rr(struct rq *rq, struct task_struct *p, int sleep)
 {
 	// first update the task's runtime statistics
 	update_curr_other_rr(rq);
 
-	// not yet implemented
+	// not yet implemented NOT DONE
+	struct sched_entity *se = &p->se;
+	struct other_rr_rq *other_rr_rq;
+
+	for_each_sched_entity(se){
+		other_rr_rq = other_rr_rq(se);
+				
+//begin dequeue_entity
+		update_curr_other_rr(other_rr_rq);
+
+		if(sleep){
+			struct task_struct *tsk = task_of(se);
+			if(p->state & TASK_INTERRUPTIBLE)
+				tsk->sleep_start = rq_of(rq)->clock;
+			if(p->state & TASK_UNINTERRUPTIBLE)
+				tsk->block_start = rq_of(rq)->clock;
+		}
+
+		for each sched entity(se){
+			if(!se || cfs_rq->last == se)
+				cfs_rq->last = NULL;
+			if(!se || cfs_rq->next = NULL;
+		}
+	
+		if (se!=cfs_rq->curr)
+			if(cfs_rq->rb_leftmost  &se->run_node) {
+				struct rb_node *next_node;
+				next_node = rb_next(&se->run_node);
+				cfs_rq->rb_leftmost = next_node;
+			}
+			rb_erase(&se->run_node, &cfs_rq->tasks_timeline);
+		}
+	
+		account_entity_dequeue(cfs_rq, se);
+		update_min_vruntime(cfs_rq);
+		
+		if (!sleep)
+			se->vruntime -= cfs_rq->min_vruntime;
+//end dequeue_entity
+		if(other_rr_rq->load.weight)
+			break;
+		sleep = 1;
+	}
+	hrtick_update(rq);
 }
 
 /*
