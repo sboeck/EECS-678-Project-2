@@ -6551,9 +6551,12 @@ recheck:
 		policy &= ~SCHED_RESET_ON_FORK;
 
 		if (policy != SCHED_FIFO && policy != SCHED_RR &&
-		policy != SCHED_NORMAL && policy != SCHED_BATCH &&
-		policy != SCHED_IDLE)
+		policy != SCHED_OTHER_RR && policy != SCHED_NORMAL &&
+		policy != SCHED_BATCH && policy != SCHED_IDLE)
 			return -EINVAL;
+		if (policy == SCHED_OTHER_RR) {
+			printk("OTHER_RR scheduling selected\n");
+		}
 	}
 
 	/*
