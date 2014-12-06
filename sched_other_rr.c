@@ -32,7 +32,13 @@ static void update_curr_other_rr(struct rq *rq)
 static void enqueue_task_other_rr(struct rq *rq, struct task_struct *p, int wakeup, bool b)
 {
 	// not yet implemented
+	if(wakeup){
+		rq->other_rr.queue.add_tail(p, rq->curr);
+		rq->other_rr.running++;
+	}
+
 }
+
 
 static void dequeue_task_other_rr(struct rq *rq, struct task_struct *p, int sleep)
 {
@@ -40,6 +46,13 @@ static void dequeue_task_other_rr(struct rq *rq, struct task_struct *p, int slee
 	update_curr_other_rr(rq);
 
 	// not yet implemented
+	if(sleep){
+		//take p out of runnable and into sleep queue(?)
+		&p->se->sleep_start = rq->clock;// "rq->" might be wrong
+	}
+	rq->other_rr.queue.del(p); //process is done so delete
+		//possible memory leak here?
+	other_rr_rq->running--;
 }
 
 /*
@@ -58,6 +71,14 @@ static void
 yield_task_other_rr(struct rq *rq)
 {
 	// not yet implemented
+	struct list_head *head, *curr;
+	struct task_struct *p;
+	head = &rq->other_rr.queue;
+	curr = head->prev;
+	p = list_entry(curr, struct task_struct, other_rr_run_list);
+	
+	put_prev_task_other_rr(rq, p);
+	requeue_task_other_rr(rq, p);//switch the order of these two?
 }
 
 /*
